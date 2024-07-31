@@ -43,6 +43,8 @@
   
   <script lang="ts">
   import { defineComponent, ref } from 'vue';
+  import axios from 'axios';
+import router from '@/router';
   
   export default defineComponent({
     name: 'Signup',
@@ -71,6 +73,28 @@
   
         // Simulate a signup process
         alert(`Signing up with username: ${username.value}, email: ${email.value}, and password: ${password.value}`);
+        const data = {
+          user:username.value,
+          email:email.value,
+          password:password.value
+        }
+        //https://localhost:3000/signup
+        //https://basicexpress.onrender.com/signup
+        axios.post('https://basicexpress.onrender.com/signup',data)
+        .then(res=>{
+            console.log(res);
+            if(res.data =='ok')
+            {
+                router.push('login');
+            }
+            if(res.data == 'user already exists')
+            {
+                alert(res.data);
+            }
+        })
+        .catch(e =>{
+          console.log(e);
+        })
         
         // Reset the form
         username.value = '';
