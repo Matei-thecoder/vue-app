@@ -32,6 +32,8 @@
   
   <script lang="ts">
   import { defineComponent, ref } from 'vue';
+  import axios from 'axios';
+import router from '@/router';
   
   export default defineComponent({
     name: 'Login',
@@ -50,6 +52,32 @@
   
         // Simulate a login process
         alert(`Logging in with username: ${username.value} and password: ${password.value}`);
+        let data = {
+          user:username.value,
+          password:password.value
+        }
+        axios.post('https://basicexpress.onrender.com/login',data)
+        .then(res=>{
+          if(res.data == 'ok')
+          {
+              console.log('ok');
+              router.push('home');
+          }
+          else if(res.data == 'error1')
+          {
+            console.log('user doesnt exist');
+            alert('user doesnt exist');
+          }
+          else if( res.data == 'error2')
+          {
+            console.log('incorrect password');
+            alert('incorrect password');
+          }
+        })
+        .catch(e=>{
+          console.log(e);
+          alert('error');
+        })
         
         // Reset the form
         username.value = '';
