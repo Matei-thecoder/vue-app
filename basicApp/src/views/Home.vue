@@ -26,7 +26,26 @@
   </template>
   
   <script lang="ts">
-  import { defineComponent, ref } from 'vue';
+  import axios from 'axios';
+import { defineComponent, ref, watch } from 'vue';
+  import { useRoute } from 'vue-router'
+
+  const loading = ref(false);
+  const post = ref(null);
+  const error = ref(null);
+  const route = useRoute()
+  function getCookieValue(name: string): string | undefined {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    
+    if (parts.length === 2) {
+      return parts.pop()?.split(";").shift();
+    }
+
+    return undefined;
+  }
+  
+  
   
   interface Message {
     id: number;
@@ -34,15 +53,103 @@
     timestamp: Date;
     username: string;
   }
+  let messagesFromDb : {id:number, text:string, username:string}[];
+  let numberOfMessages : number;
+  /*const fetchMessages = async()=>{
+        await axios.post('https://basicexpress.onrender.com/getMessages')
+        .then(res=>{
+          if(res.data == "No messages")
+          {
+              console.log("no messages");
+          }
+          else
+          {
+            console.log(res.data);
+            for(let i=0;i<res.data.length;i++)
+            {
+              messagesFromDb = res.data;
+            }
+            numberOfMessages = res.data.length;
+          }
+          
+          
+        })
+        .catch(e=>{
+          throw(e);
+        })
+      }
+  fetchMessages();*/
+  
   
   export default defineComponent({
     name: 'Home',
     setup() {
       // Reactive references for messages and new message input
+      const username = getCookieValue("username") || "anonymous";
       const messages = ref<Message[]>([
-        { id: 1, text: 'Hello!', timestamp: new Date(),username:'user1' },
-        { id: 2, text: 'How are you?', timestamp: new Date(),username:'user1' }
+        
       ]);
+      const fetchMessages = async()=>{
+        await axios.post('https://basicexpress.onrender.com/getMessages')
+          .then(res=>{
+          console.log(res.data);
+          for(let i=0;i<res.data.length;i++)
+          {
+            const newMessageObj: Message = {
+                id: res.data[i].id,
+                text: res.data[i].text,
+                timestamp: new Date(),
+                username:res.data[i].username
+              };
+              messages.value.push(newMessageObj);
+          }
+          
+        })
+        .catch(e=>{
+          throw(e);
+        })
+      }
+      fetchMessages();
+      /*const fetchMessages = async()=>{
+        
+          .then(res=>{
+            if(res.data == "No messages")
+            {
+                console.log("no messages");
+            }
+            else
+            {
+              console.log(res.data);
+              for(let i=0;i<res.data.length;i++)
+              {
+                messagesFromDb = res.data;
+              }
+              numberOfMessages = res.data.length;
+            }
+            
+            
+          })
+          .catch(e=>{
+            throw(e);
+          })
+        }
+      fetchMessages();
+      console.log(messagesFromDb);
+      const loadMessages = () =>{
+        for(let i=0;i<numberOfMessages;i++)
+          {
+            const newMessageObj: Message = {
+                id: messagesFromDb[i].id,
+                text: messagesFromDb[i].text,
+                timestamp: new Date(),
+                username:messagesFromDb[i].username
+              };
+              messages.value.push(newMessageObj);
+          }
+      }
+      loadMessages();*/
+      
+      
   
       const newMessage = ref<string>('');
   
@@ -72,6 +179,7 @@
         formatTimestamp
       };
     }
+   
   });
   </script>
   

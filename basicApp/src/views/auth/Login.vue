@@ -62,11 +62,11 @@ import router from '@/router';
         }
         axios.post('https://basicexpress.onrender.com/login',data)
         .then(res=>{
-          if(res.data == 'ok')
+          if(res.data.result == 'ok')
           {
               console.log('ok');
-              setCookie('username',`${username.value}`);
-              
+              //setCookie('username',`${username.value}`);
+              setCookie('username',res.data.username);
               router.push('home');
           }
           else if(res.data == 'error1')
