@@ -34,14 +34,18 @@
   import { defineComponent, ref } from 'vue';
   import axios from 'axios';
 import router from '@/router';
-  
+  function setCookie( id: string, value: string) {
+
+    document.cookie = id + '=' + value;
+
+  }
   export default defineComponent({
     name: 'Login',
     setup() {
       // Define reactive references for username and password
       const username = ref<string>('');
       const password = ref<string>('');
-  
+        
       // Handle form submission
       const handleSubmit = () => {
         // Simple validation for demonstration
@@ -61,6 +65,8 @@ import router from '@/router';
           if(res.data == 'ok')
           {
               console.log('ok');
+              setCookie('username',`${username.value}`);
+              
               router.push('home');
           }
           else if(res.data == 'error1')
